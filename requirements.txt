@@ -1,0 +1,18 @@
+# Core dependencies
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.1.0
+python-dateutil>=2.8.2
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Vector database
+pinecone-client>=3.0.0
+
+# AI/ML
+openai>=1.12.0
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.66.0

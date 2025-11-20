@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (optional - use if you don't have external DB)
+  postgres:
+    image: postgres:16-alpine
+    container_name: nihr-postgres
+    environment:
+      POSTGRES_DB: ailsa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # NIHR Scraper (one-time run)
+  nihr-scraper:
+    build: .
+    container_name: nihr-scraper
+    env_file: .env
+    environment:
+      # Override DATABASE_URL to use docker postgres
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/ailsa
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./nihr_urls.txt:/app/nihr_urls.txt
+    command: python3 ingest_nihr.py
+    restart: "no"
+
+  # NIHR Scraper (cron mode - scheduled runs)
+  nihr-scraper-cron:
+    build: .
+    container_name: nihr-scraper-cron
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/ailsa
+      CRON_SCHEDULE: "0 2 * * *"  # Daily at 2 AM
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./nihr_urls.txt:/app/nihr_urls.txt
+    command: ./docker-entrypoint.sh cron
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: nihr-network
