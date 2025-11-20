@@ -31,8 +31,20 @@ fi
 echo "Running ingestion..." | tee -a "$LOG_FILE"
 python3 ingest_nihr.py 2>&1 | tee -a "$LOG_FILE"
 
+INGEST_EXIT=$?
+
+# If ingestion succeeded, extract budget info from documents
+if [ $INGEST_EXIT -eq 0 ]; then
+    echo "" | tee -a "$LOG_FILE"
+    echo "Extracting budget info from documents..." | tee -a "$LOG_FILE"
+    python3 extract_funding_from_docs.py 2>&1 | tee -a "$LOG_FILE"
+    EXTRACT_EXIT=$?
+else
+    EXTRACT_EXIT=1
+fi
+
 # Check exit status
-if [ ${PIPESTATUS[0]} -eq 0 ]; then
+if [ $INGEST_EXIT -eq 0 ] && [ $EXTRACT_EXIT -eq 0 ]; then
     echo "=========================================" | tee -a "$LOG_FILE"
     echo "✅ Scraper completed successfully at $(date)" | tee -a "$LOG_FILE"
     echo "=========================================" | tee -a "$LOG_FILE"

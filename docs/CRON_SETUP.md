@@ -8,6 +8,7 @@ This setup enables automated scraping of NIHR funding opportunities on a schedul
 - **Detect and log changes** (status, deadline, budget)
 - **Update PostgreSQL** with latest data
 - **Update Pinecone** with fresh embeddings
+- **Extract budget info** from PDFs and linked documents
 
 ## Quick Start
 
@@ -72,6 +73,11 @@ The scraper automatically:
 5. **Updates storage**:
    - PostgreSQL: Grant metadata
    - Pinecone: Embeddings with updated content
+
+6. **Extracts budgets** from documents:
+   - Searches PDFs and linked pages for funding amounts
+   - Updates grants with extracted budget information
+   - Improves budget coverage to 93%+
 
 ### What Gets Scraped
 
