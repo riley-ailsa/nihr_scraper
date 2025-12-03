@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Extract funding information from documents in Pinecone and update PostgreSQL.
+Extract funding information from documents in Pinecone and update MongoDB.
 
 Many NIHR grants have funding info in their PDFs and linked pages,
 but not in the main grant metadata. This script:
 1. Searches all document chunks for funding patterns
 2. Extracts the best funding amount for each grant
-3. Updates PostgreSQL with the extracted budgets
+3. Updates MongoDB with the extracted budgets
 """
 
 import os
@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import Dict, List, Tuple, Optional
 from dotenv import load_dotenv
 from pinecone import Pinecone
-import psycopg2
+from pymongo import MongoClient
 from tqdm import tqdm
 
 load_dotenv()
@@ -23,7 +23,8 @@ load_dotenv()
 # Initialize connections
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index(os.getenv("PINECONE_INDEX_NAME", "ailsa-grants"))
-pg_conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+mongo_client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+db = mongo_client[os.getenv("MONGO_DATABASE", "nihr_grants")]
 
 
 def parse_gbp_amount(text: str) -> Optional[int]:
@@ -177,11 +178,11 @@ def select_best_funding(funding_list: List[Tuple[str, str, int]]) -> Tuple[str, 
     return best_text, best_amount
 
 
-def update_postgres(grant_funding: Dict[str, List[Tuple[str, str, int]]]):
-    """Update PostgreSQL with extracted funding amounts."""
-    cursor = pg_conn.cursor()
+def update_mongodb(grant_funding: Dict[str, List[Tuple[str, str, int]]]):
+    """Update MongoDB with extracted funding amounts."""
+    from datetime import datetime
 
-    print(f"\n💾 Updating PostgreSQL with funding info...")
+    print(f"\n💾 Updating MongoDB with funding info...")
 
     updated = 0
     skipped_has_funding = 0
@@ -189,17 +190,16 @@ def update_postgres(grant_funding: Dict[str, List[Tuple[str, str, int]]]):
 
     for grant_id, funding_list in tqdm(grant_funding.items()):
         # Check if grant already has funding
-        cursor.execute(
-            "SELECT budget_max FROM grants WHERE grant_id = %s",
-            (grant_id,)
+        existing = db.grants.find_one(
+            {"grant_id": grant_id},
+            {"total_fund_gbp": 1}
         )
-        result = cursor.fetchone()
 
-        if not result:
+        if not existing:
             skipped_no_funding += 1
             continue
 
-        existing_budget = result[0]
+        existing_budget = existing.get("total_fund_gbp")
 
         # Skip if already has budget
         if existing_budget and existing_budget > 0:
@@ -214,19 +214,18 @@ def update_postgres(grant_funding: Dict[str, List[Tuple[str, str, int]]]):
             continue
 
         # Update database
-        cursor.execute("""
-            UPDATE grants
-            SET budget_min = %s,
-                budget_max = %s,
-                description_summary = COALESCE(description_summary, '') || '\n\nFunding: ' || %s,
-                updated_at = NOW()
-            WHERE grant_id = %s
-        """, (amount, amount, funding_text, grant_id))
+        db.grants.update_one(
+            {"grant_id": grant_id},
+            {
+                "$set": {
+                    "total_fund_gbp": amount,
+                    "total_fund_display": funding_text,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
 
         updated += 1
-
-    pg_conn.commit()
-    cursor.close()
 
     print(f"\n✅ Updated: {updated}")
     print(f"⏭️  Skipped (already has funding): {skipped_has_funding}")
@@ -235,7 +234,7 @@ def update_postgres(grant_funding: Dict[str, List[Tuple[str, str, int]]]):
 
 def main():
     print("=" * 70)
-    print("EXTRACT FUNDING FROM DOCUMENTS → POSTGRESQL")
+    print("EXTRACT FUNDING FROM DOCUMENTS → MONGODB")
     print("=" * 70)
 
     # Extract funding from Pinecone documents
@@ -254,33 +253,30 @@ def main():
         print(f"  Sources: {len(funding_list)} mentions")
         print()
 
-    # Update PostgreSQL
-    update_postgres(grant_funding)
+    # Update MongoDB
+    update_mongodb(grant_funding)
 
     # Final stats
-    cursor = pg_conn.cursor()
-    cursor.execute("""
-        SELECT
-            COUNT(*) as total,
-            COUNT(budget_max) as with_budget,
-            COUNT(*) FILTER (WHERE budget_max > 0) as with_positive_budget
-        FROM grants
-        WHERE source = 'nihr'
-    """)
-
-    total, with_budget, with_positive = cursor.fetchone()
-    cursor.close()
+    total = db.grants.count_documents({"source": "nihr"})
+    with_positive = db.grants.count_documents({
+        "source": "nihr",
+        "total_fund_gbp": {"$gt": 0}
+    })
 
     print("\n" + "=" * 70)
     print("EXTRACTION COMPLETE")
     print("=" * 70)
-    print(f"📊 PostgreSQL (NIHR):")
+    print(f"📊 MongoDB (NIHR):")
     print(f"   Total grants: {total}")
-    print(f"   With budget: {with_positive} ({with_positive*100//total}%)")
-    print(f"   Without budget: {total - with_positive} ({(total-with_positive)*100//total}%)")
+    if total > 0:
+        print(f"   With budget: {with_positive} ({with_positive*100//total}%)")
+        print(f"   Without budget: {total - with_positive} ({(total-with_positive)*100//total}%)")
+    else:
+        print(f"   With budget: {with_positive}")
+        print(f"   Without budget: {total - with_positive}")
     print("=" * 70)
 
-    pg_conn.close()
+    mongo_client.close()
 
 
 if __name__ == "__main__":

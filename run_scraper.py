@@ -146,51 +146,42 @@ for i, (doc, emb) in enumerate(zip(sample_docs, embeddings), 1):
     }
     print(json.dumps(metadata, indent=10))
 
-# Step 7: Database check (if available)
-print("\n[STEP 7] Database connection check...")
+# Step 7: Database check (MongoDB)
+print("\n[STEP 7] MongoDB connection check...")
 print("-" * 80)
 
 try:
-    import psycopg2
-    from urllib.parse import urlparse
+    from pymongo import MongoClient
 
-    db_url = os.getenv('DATABASE_URL')
-    result = urlparse(db_url)
+    mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
+    mongo_db_name = os.getenv('MONGO_DATABASE', 'nihr_grants')
 
-    conn = psycopg2.connect(
-        database=result.path[1:],
-        user=result.username,
-        password=result.password,
-        host=result.hostname,
-        port=result.port
-    )
-    cursor = conn.cursor()
+    client = MongoClient(mongo_uri)
+    db = client[mongo_db_name]
 
     # Check if grant already exists
-    cursor.execute("SELECT id, title, scraped_at FROM grants WHERE id = %s", (grant.id,))
-    existing = cursor.fetchone()
+    grant_id = f"nihr_{grant.external_id}" if grant.external_id else grant.id
+    existing = db.grants.find_one({"grant_id": grant_id})
 
     if existing:
-        print(f"⚠️  Grant already exists in PostgreSQL database")
-        print(f"   Existing ID: {existing[0]}")
-        print(f"   Existing title: {existing[1]}")
-        print(f"   Scraped at: {existing[2]}")
+        print(f"⚠️  Grant already exists in MongoDB")
+        print(f"   Existing ID: {existing.get('grant_id')}")
+        print(f"   Existing title: {existing.get('title')}")
+        print(f"   Scraped at: {existing.get('scraped_at')}")
         print(f"   → Would UPDATE existing record")
     else:
         print(f"✅ Grant does not exist in database")
         print(f"   → Would INSERT new record")
 
-    # Check document count
-    cursor.execute("SELECT COUNT(*) FROM documents WHERE grant_id = %s", (grant.id,))
-    doc_count = cursor.fetchone()[0]
-    print(f"\n   Existing documents for this grant: {doc_count}")
+    # Check total grant count
+    total_count = db.grants.count_documents({"source": "nihr"})
+    print(f"\n   Total NIHR grants in database: {total_count}")
     print(f"   → Would upsert {len(documents)} documents")
 
-    cursor.close()
-    conn.close()
+    client.close()
 
 except Exception as e:
-    print(f"❌ Database connection error: {str(e)}")
+    print(f"❌ MongoDB connection error: {str(e)}")
 
 # Step 8: Pinecone check
 print("\n[STEP 8] Pinecone index check...")

@@ -1,6 +1,6 @@
 #!/bin/bash
 # NIHR Scraper - Production Cron Runner
-# This script runs the scraper with proper logging and error handling
+# This script runs discovery and scraper with proper logging and error handling
 
 set -e  # Exit on error
 
@@ -27,16 +27,28 @@ if [ -d "venv" ]; then
     source venv/bin/activate
 fi
 
-# Run the scraper
-echo "Running ingestion..." | tee -a "$LOG_FILE"
+# Step 1: Run discovery to find new opportunities
+echo "" | tee -a "$LOG_FILE"
+echo "Step 1: Running discovery..." | tee -a "$LOG_FILE"
+python3 scripts/discovery.py 2>&1 | tee -a "$LOG_FILE"
+
+DISCOVERY_EXIT=$?
+
+if [ $DISCOVERY_EXIT -ne 0 ]; then
+    echo "⚠️  Discovery had issues, continuing with scraper..." | tee -a "$LOG_FILE"
+fi
+
+# Step 2: Run the scraper
+echo "" | tee -a "$LOG_FILE"
+echo "Step 2: Running ingestion..." | tee -a "$LOG_FILE"
 python3 run_ingestion.py 2>&1 | tee -a "$LOG_FILE"
 
 INGEST_EXIT=$?
 
-# If ingestion succeeded, extract budget info from documents
+# Step 3: If ingestion succeeded, extract budget info from documents
 if [ $INGEST_EXIT -eq 0 ]; then
     echo "" | tee -a "$LOG_FILE"
-    echo "Extracting budget info from documents..." | tee -a "$LOG_FILE"
+    echo "Step 3: Extracting budget info from documents..." | tee -a "$LOG_FILE"
     python3 scripts/extract_funding_from_docs.py 2>&1 | tee -a "$LOG_FILE"
     EXTRACT_EXIT=$?
 else
