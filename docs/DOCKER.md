@@ -50,7 +50,7 @@ Use cases:
 
 ### Mode 3: Standalone (No Database)
 
-Use external PostgreSQL and Pinecone:
+Use external MongoDB and Pinecone:
 
 ```bash
 # Build image
@@ -60,7 +60,7 @@ docker build -t nihr-scraper .
 docker run --rm \
   --env-file .env \
   -v $(pwd)/logs:/app/logs \
-  -v $(pwd)/nihr_urls.txt:/app/nihr_urls.txt \
+  -v $(pwd)/data/urls/nihr_urls.txt:/app/data/urls/nihr_urls.txt \
   nihr-scraper
 ```
 
@@ -78,11 +78,11 @@ OPENAI_API_KEY=sk-...
 PINECONE_API_KEY=pcsk_...
 PINECONE_INDEX_NAME=ailsa-grants
 
-# PostgreSQL
-DATABASE_URL=postgresql://user:password@host:port/database
+# MongoDB
+DATABASE_URL=mongodb://user:password@host:port/database
 ```
 
-For docker-compose with bundled PostgreSQL:
+For docker-compose with bundled MongoDB:
 
 ```bash
 # Set postgres password
@@ -112,14 +112,14 @@ Persist data and configuration:
 ```yaml
 volumes:
   - ./logs:/app/logs              # Log files
-  - ./nihr_urls.txt:/app/nihr_urls.txt  # URL tracking
+  - ./data/urls/nihr_urls.txt:/app/data/urls/nihr_urls.txt  # URL tracking
 ```
 
 ## Docker Compose Services
 
 ### postgres
 
-Bundled PostgreSQL database (optional):
+Bundled MongoDB database (optional):
 
 ```yaml
 postgres:
@@ -127,7 +127,7 @@ postgres:
   ports:
     - "5432:5432"
   volumes:
-    - postgres_data:/var/lib/postgresql/data
+    - postgres_data:/var/lib/mongodb/data
     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 ```
 
@@ -140,7 +140,7 @@ One-time execution:
 ```yaml
 nihr-scraper:
   build: .
-  command: python3 ingest_nihr.py
+  command: python3 run_ingestion.py
   restart: "no"
 ```
 
@@ -151,7 +151,7 @@ Scheduled execution:
 ```yaml
 nihr-scraper-cron:
   build: .
-  command: ./docker-entrypoint.sh cron
+  command: ./scripts/docker_entrypoint.sh cron
   restart: unless-stopped
 ```
 
@@ -206,13 +206,13 @@ docker-compose down nihr-scraper-cron
 ### Test Mode
 
 ```bash
-docker run --rm --env-file .env nihr-scraper ./docker-entrypoint.sh test
+docker run --rm --env-file .env nihr-scraper ./scripts/docker_entrypoint.sh test
 ```
 
 ### Dry Run Mode
 
 ```bash
-docker run --rm --env-file .env nihr-scraper ./docker-entrypoint.sh dry-run
+docker run --rm --env-file .env nihr-scraper ./scripts/docker_entrypoint.sh dry-run
 ```
 
 ## Monitoring
@@ -227,8 +227,8 @@ docker-compose logs -f nihr-scraper-cron
 docker logs -f nihr-scraper-cron
 
 # File logs (via volume mount)
-tail -f logs/scraper_*.log
-tail -f logs/cron.log
+tail -f outputs/logs/scraper_*.log
+tail -f outputs/logs/cron.log
 ```
 
 ### Check Status
@@ -251,7 +251,7 @@ docker-compose exec postgres psql -U postgres -d ailsa -c "SELECT COUNT(*) FROM 
 docker-compose exec nihr-scraper-cron /bin/bash
 
 # Run scraper manually
-docker-compose exec nihr-scraper-cron python3 ingest_nihr.py
+docker-compose exec nihr-scraper-cron python3 run_ingestion.py
 
 # Check crontab
 docker-compose exec nihr-scraper-cron crontab -l
@@ -279,7 +279,7 @@ docker-compose build --no-cache
 docker-compose ps postgres
 
 # Test connection from scraper
-docker-compose exec nihr-scraper-cron psql $DATABASE_URL -c "SELECT 1;"
+docker-compose exec nihr-scraper-cron mongosh -c "SELECT 1;"
 
 # Check database logs
 docker-compose logs postgres
@@ -295,14 +295,14 @@ docker-compose exec nihr-scraper-cron ps aux | grep cron
 docker-compose exec nihr-scraper-cron crontab -l
 
 # View cron logs
-docker-compose exec nihr-scraper-cron cat /app/logs/cron.log
+docker-compose exec nihr-scraper-cron cat /app/outputs/logs/cron.log
 ```
 
 ### Permission Issues
 
 ```bash
 # Fix log directory permissions
-chmod 777 logs/
+chmod 777 outputs/logs/
 
 # Or rebuild with proper permissions
 docker-compose build --no-cache
@@ -335,7 +335,7 @@ services:
       CRON_SCHEDULE: "0 2 * * *"
     volumes:
       - ./logs:/app/logs:rw
-      - ./nihr_urls.txt:/app/nihr_urls.txt:ro
+      - ./data/urls/nihr_urls.txt:/app/data/urls/nihr_urls.txt:ro
     logging:
       driver: "json-file"
       options:
@@ -451,7 +451,7 @@ services:
     build:
       context: .
       target: development
-    command: ./docker-entrypoint.sh dry-run
+    command: ./scripts/docker_entrypoint.sh dry-run
     volumes:
       - .:/app  # Live code reload
 ```
@@ -506,7 +506,7 @@ jobs:
         run: docker build -t nihr-scraper .
 
       - name: Run tests
-        run: docker run --rm nihr-scraper ./docker-entrypoint.sh test
+        run: docker run --rm nihr-scraper ./scripts/docker_entrypoint.sh test
 
       - name: Deploy
         run: |
@@ -558,4 +558,4 @@ For issues:
 1. Check container logs: `docker-compose logs`
 2. Verify environment: `docker-compose config`
 3. Test locally: `docker-compose up nihr-scraper`
-4. Review file logs: `logs/scraper_*.log`
+4. Review file logs: `outputs/logs/scraper_*.log`

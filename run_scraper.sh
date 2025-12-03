@@ -6,7 +6,7 @@ set -e  # Exit on error
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_DIR="$SCRIPT_DIR/logs"
+LOG_DIR="$SCRIPT_DIR/outputs/logs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 LOG_FILE="$LOG_DIR/scraper_$TIMESTAMP.log"
 
@@ -29,7 +29,7 @@ fi
 
 # Run the scraper
 echo "Running ingestion..." | tee -a "$LOG_FILE"
-python3 ingest_nihr.py 2>&1 | tee -a "$LOG_FILE"
+python3 run_ingestion.py 2>&1 | tee -a "$LOG_FILE"
 
 INGEST_EXIT=$?
 
@@ -37,7 +37,7 @@ INGEST_EXIT=$?
 if [ $INGEST_EXIT -eq 0 ]; then
     echo "" | tee -a "$LOG_FILE"
     echo "Extracting budget info from documents..." | tee -a "$LOG_FILE"
-    python3 extract_funding_from_docs.py 2>&1 | tee -a "$LOG_FILE"
+    python3 scripts/extract_funding_from_docs.py 2>&1 | tee -a "$LOG_FILE"
     EXTRACT_EXIT=$?
 else
     EXTRACT_EXIT=1

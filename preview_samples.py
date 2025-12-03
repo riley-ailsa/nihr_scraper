@@ -248,7 +248,7 @@ def main():
         print("  2. Check funding amounts are parsed correctly")
         print("  3. Verify sections and resources are captured")
         print("  4. Run full ingestion when satisfied:")
-        print(f"     python3 -m src.scripts.backfill_nihr_production --input {input_path}")
+        print(f"     python run_ingestion.py")
         print()
 
     return 0 if stats["failed"] == 0 else 1

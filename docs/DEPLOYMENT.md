@@ -14,7 +14,7 @@ Complete deployment package ready for production use.
 
 1. **Docker (Recommended)**
    - Containerized application
-   - Bundled PostgreSQL database
+   - Bundled MongoDB database
    - Automatic cron scheduling
    - Health checks and auto-restart
    - Production-ready configuration
@@ -32,17 +32,17 @@ NIHR scraper/
 ├── Docker Deployment
 │   ├── Dockerfile                  # Application container
 │   ├── docker-compose.yml          # Full stack orchestration
-│   ├── docker-entrypoint.sh        # Container startup script
+│   ├── scripts/docker_entrypoint.sh        # Container startup script
 │   ├── .dockerignore               # Build optimization
 │   ├── init.sql                    # Database initialization
 │   └── requirements.txt            # Python dependencies
 │
 ├── Application Code
-│   ├── ingest_nihr.py              # Main ingestion script
+│   ├── run_ingestion.py              # Main ingestion script
 │   ├── run_scraper.sh              # Cron runner
-│   ├── setup_cron.sh               # Cron installer
-│   ├── dry_run.py                  # Testing script
-│   ├── nihr_urls.txt               # URL tracking
+│   ├── cron_job.sh               # Cron installer
+│   ├── run_scraper.py                  # Testing script
+│   ├── data/urls/nihr_urls.txt               # URL tracking
 │   └── src/                        # Core library
 │       ├── ingest/                 # Web scraping
 │       ├── normalize/              # Data transformation
@@ -78,7 +78,7 @@ docker-compose up -d nihr-scraper-cron
 
 # 3. Monitor
 docker-compose logs -f nihr-scraper-cron
-tail -f logs/scraper_*.log
+tail -f outputs/logs/scraper_*.log
 
 # 4. Verify
 docker-compose exec nihr-scraper-cron python3 -c "
@@ -101,10 +101,10 @@ nano .env
 python3 test_nihr_scraper.py
 
 # 4. Deploy
-./setup_cron.sh  # Choose schedule
+./cron_job.sh  # Choose schedule
 
 # 5. Monitor
-tail -f logs/scraper_*.log
+tail -f outputs/logs/scraper_*.log
 ```
 
 ## Features
@@ -112,8 +112,8 @@ tail -f logs/scraper_*.log
 ### Automatic Operations
 - Queries database for all open NIHR grants
 - Rescrapes each to detect changes
-- Processes new URLs from nihr_urls.txt
-- Updates PostgreSQL and Pinecone
+- Processes new URLs from data/urls/nihr_urls.txt
+- Updates MongoDB and Pinecone
 - Logs all changes with details
 
 ### Change Detection
@@ -154,7 +154,7 @@ The grants collection includes:
 
 ### URL Tracking
 
-Edit nihr_urls.txt:
+Edit data/urls/nihr_urls.txt:
 ```
 https://www.nihr.ac.uk/funding/opportunity-1/2025448
 https://www.nihr.ac.uk/funding/opportunity-2/2025449
@@ -173,8 +173,8 @@ docker inspect nihr-scraper-cron | grep Health
 mongosh "$MONGO_URI" --eval 'use ailsa_grants; db.grants.countDocuments({source: "nihr"})'
 
 # Logs
-tail -f logs/scraper_*.log
-grep -i error logs/scraper_*.log
+tail -f outputs/logs/scraper_*.log
+grep -i error outputs/logs/scraper_*.log
 ```
 
 ### Performance Metrics
@@ -193,7 +193,7 @@ Monthly costs (daily runs):
 ## Production Checklist
 
 - [ ] .env file configured with production API keys
-- [ ] nihr_urls.txt populated with opportunities to track
+- [ ] data/urls/nihr_urls.txt populated with opportunities to track
 - [ ] MongoDB cluster accessible (MONGO_URI configured)
 - [ ] MongoDB indexes created (run mongo_setup.js)
 - [ ] Pinecone index created (ailsa-grants)
@@ -207,15 +207,15 @@ Monthly costs (daily runs):
 
 ### Regular Tasks
 - Monitor logs for errors
-- Add new URLs to nihr_urls.txt
+- Add new URLs to data/urls/nihr_urls.txt
 - Review change reports
 - Verify database growth
 - Check API usage/costs
 
 ### Troubleshooting
-1. Check logs: logs/scraper_*.log
-2. Test manually: python3 ingest_nihr.py
-3. Dry run: python3 dry_run.py
+1. Check logs: outputs/logs/scraper_*.log
+2. Test manually: python3 run_ingestion.py
+3. Dry run: python3 run_scraper.py
 4. Database: mongosh "$MONGO_URI"
 5. Documentation: docs/
 
@@ -223,8 +223,8 @@ Monthly costs (daily runs):
 
 1. Configure .env with production credentials
 2. Choose deployment method (Docker recommended)
-3. Add URLs to nihr_urls.txt
-4. Test with dry_run.py
+3. Add URLs to data/urls/nihr_urls.txt
+4. Test with run_scraper.py
 5. Deploy and monitor first run
 6. Set up alerting for failures
 

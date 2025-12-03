@@ -12,10 +12,10 @@ Features:
 - Full logging and progress tracking
 
 Usage:
-    python3 -m src.scripts.backfill_nihr_production \
-        --input nihr_urls.txt \
+    python scripts/backfill_production.py \
+        --input data/urls/nihr_urls.txt \
         --batch-size 20 \
-        --checkpoint checkpoints/nihr_ingest.txt
+        --checkpoint outputs/checkpoints/nihr_ingest.txt
 """
 
 import argparse
@@ -316,9 +316,9 @@ def main():
     if stats["processed"] > 0:
         logger.info("💡 Next steps:")
         logger.info("  1. Validate database:")
-        logger.info(f"     python3 scripts/inspect_db.py --db {args.db}")
-        logger.info("  2. Test search:")
-        logger.info("     python3 -m src.scripts.test_search")
+        logger.info(f"     python scripts/test_connections.py")
+        logger.info("  2. Run full ingestion:")
+        logger.info("     python run_ingestion.py")
         logger.info("")
 
     return 0 if stats["failed"] == 0 else 1

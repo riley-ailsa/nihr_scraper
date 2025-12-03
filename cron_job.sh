@@ -13,12 +13,13 @@ echo "This will set up automated scraping on a schedule."
 echo ""
 echo "Available schedules:"
 echo "  1) Daily at 2:00 AM"
-echo "  2) Every 6 hours"
-echo "  3) Every 12 hours"
-echo "  4) Weekly (Sundays at 2:00 AM)"
-echo "  5) Custom (you specify)"
+echo "  2) Tuesday & Friday at 2:00 AM (recommended)"
+echo "  3) Every 6 hours"
+echo "  4) Every 12 hours"
+echo "  5) Weekly (Sundays at 2:00 AM)"
+echo "  6) Custom (you specify)"
 echo ""
-read -p "Choose option (1-5): " choice
+read -p "Choose option (1-6): " choice
 
 case $choice in
     1)
@@ -26,18 +27,22 @@ case $choice in
         DESCRIPTION="Daily at 2:00 AM"
         ;;
     2)
+        CRON_SCHEDULE="0 2 * * 2,5"
+        DESCRIPTION="Tuesday & Friday at 2:00 AM"
+        ;;
+    3)
         CRON_SCHEDULE="0 */6 * * *"
         DESCRIPTION="Every 6 hours"
         ;;
-    3)
+    4)
         CRON_SCHEDULE="0 */12 * * *"
         DESCRIPTION="Every 12 hours"
         ;;
-    4)
+    5)
         CRON_SCHEDULE="0 2 * * 0"
         DESCRIPTION="Weekly on Sundays at 2:00 AM"
         ;;
-    5)
+    6)
         echo ""
         echo "Enter cron schedule (e.g., '0 2 * * *' for daily at 2am):"
         read -p "Schedule: " CRON_SCHEDULE
@@ -50,7 +55,7 @@ case $choice in
 esac
 
 # Create cron entry
-CRON_ENTRY="$CRON_SCHEDULE $RUNNER_SCRIPT >> $SCRIPT_DIR/logs/cron.log 2>&1"
+CRON_ENTRY="$CRON_SCHEDULE $RUNNER_SCRIPT >> $SCRIPT_DIR/outputs/logs/cron.log 2>&1"
 
 echo ""
 echo "========================================="
@@ -82,4 +87,4 @@ echo ""
 echo "To view all cron jobs: crontab -l"
 echo "To remove this job: crontab -e"
 echo ""
-echo "Logs will be written to: $SCRIPT_DIR/logs/"
+echo "Logs will be written to: $SCRIPT_DIR/outputs/logs/"

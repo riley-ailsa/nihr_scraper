@@ -86,7 +86,7 @@ print(f"   Dimensions: {len(embeddings[0]) if embeddings else 'N/A'}")
 print(f"   Sample embedding (first 5 values): {embeddings[0][:5] if embeddings else 'N/A'}")
 
 # Step 4: Show Grant data that would be stored
-print("\n[STEP 4] Grant data that would be stored in PostgreSQL...")
+print("\n[STEP 4] Grant data that would be stored in MongoDB...")
 print("-" * 80)
 
 grant_data = {
@@ -237,10 +237,10 @@ print(f"   • {len(documents)} Embedding vectors (1536 dimensions each)")
 
 total_chars = len(grant.title or '') + len(grant.description or '') + sum(len(d.text) for d in documents)
 print(f"\nTotal storage estimate:")
-print(f"   • PostgreSQL: ~{total_chars:,} characters")
+print(f"   • MongoDB: ~{total_chars:,} characters")
 print(f"   • Pinecone: ~{len(documents) * 1536 * 4:,} bytes ({len(documents) * 1536 * 4 / 1024:.1f} KB)")
 
 print("\n" + "=" * 80)
 print("To run full ingestion:")
-print("  python backfill_nihr_production.py <url>")
+print("  python run_ingestion.py")
 print("=" * 80)

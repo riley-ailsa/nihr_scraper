@@ -12,13 +12,13 @@ cp .env.example .env  # Edit with your API keys
 python3 test_nihr_scraper.py
 
 # 3. Add URLs to track
-echo "https://www.nihr.ac.uk/funding/team-science-award-cohort-3/2025448" >> nihr_urls.txt
+echo "https://www.nihr.ac.uk/funding/team-science-award-cohort-3/2025448" >> data/urls/nihr_urls.txt
 
 # 4. Run manual ingestion
-python3 ingest_nihr.py
+python3 run_ingestion.py
 
 # 5. Set up automated scraping
-./setup_cron.sh  # Choose option 1 (Daily at 2:00 AM)
+./cron_job.sh  # Choose option 1 (Daily at 2:00 AM)
 ```
 
 ## What It Does
@@ -122,17 +122,17 @@ MONGO_DB_NAME=ailsa_grants
 python3 test_nihr_scraper.py
 
 # Dry run (no database writes)
-python3 dry_run.py
+python3 run_scraper.py
 
 # Full ingestion
-python3 ingest_nihr.py
+python3 run_ingestion.py
 ```
 
 ### Automated Execution
 
 ```bash
 # Install cron job
-./setup_cron.sh
+./cron_job.sh
 
 # Schedules available:
 #   1) Daily at 2:00 AM (recommended)
@@ -145,12 +145,12 @@ python3 ingest_nihr.py
 crontab -l | grep nihr
 
 # View logs
-tail -f logs/scraper_*.log
+tail -f outputs/logs/scraper_*.log
 ```
 
 ### URL Management
 
-Edit `nihr_urls.txt` to add opportunities:
+Edit `data/urls/nihr_urls.txt` to add opportunities:
 
 ```
 # NIHR Funding Opportunities
@@ -160,19 +160,19 @@ https://www.nihr.ac.uk/funding/another-opportunity/2025449
 
 The scraper automatically combines:
 1. All open grants from database (for change detection)
-2. New URLs from `nihr_urls.txt`
+2. New URLs from `data/urls/nihr_urls.txt`
 
 ## Project Structure
 
 ```
 NIHR scraper/
-├── ingest_nihr.py          # Main ingestion script (cron target)
+├── run_ingestion.py          # Main ingestion script (cron target)
 ├── run_scraper.sh          # Cron runner with logging
-├── setup_cron.sh           # Interactive cron installer
-├── nihr_urls.txt           # URL tracking file
-├── dry_run.py              # Pipeline test (no DB writes)
+├── cron_job.sh           # Interactive cron installer
+├── data/urls/nihr_urls.txt           # URL tracking file
+├── run_scraper.py              # Pipeline test (no DB writes)
 ├── test_nihr_scraper.py    # Quick validation
-├── logs/                   # Execution logs
+├── outputs/logs/                   # Execution logs
 │   └── scraper_*.log
 ├── src/                    # Core library
 │   ├── ingest/
@@ -194,13 +194,13 @@ NIHR scraper/
 
 ```bash
 # View latest log
-ls -t logs/scraper_*.log | head -1 | xargs tail -50
+ls -t outputs/logs/scraper_*.log | head -1 | xargs tail -50
 
 # Check for errors
-grep -i "error\|failed" logs/scraper_*.log
+grep -i "error\|failed" outputs/logs/scraper_*.log
 
 # See detected changes
-grep -A 5 "DETAILED CHANGES" logs/scraper_*.log | tail -20
+grep -A 5 "DETAILED CHANGES" outputs/logs/scraper_*.log | tail -20
 
 # Database stats (MongoDB)
 mongosh "$MONGO_URI" --eval '
@@ -219,7 +219,7 @@ db.grants.aggregate([
 INGESTING NIHR GRANTS TO PRODUCTION
 ======================================================================
 Found 15 open NIHR grants in database
-Loaded 2 URLs from nihr_urls.txt
+Loaded 2 URLs from data/urls/nihr_urls.txt
 
 Processing 17 opportunities...
 
@@ -227,7 +227,7 @@ Processing 17 opportunities...
   Scraping...
   Team Science Award (Cohort 3)...
   CHANGES: Deadline: 2026-01-28 -> 2026-02-15
-  Saved to PostgreSQL
+  Saved to MongoDB
   Generating embedding...
   Indexed in Pinecone
 
@@ -305,7 +305,7 @@ bash -x ./run_scraper.sh
 
 ```bash
 # Fix script permissions
-chmod +x run_scraper.sh setup_cron.sh ingest_nihr.py
+chmod +x run_scraper.sh cron_job.sh run_ingestion.py
 
 # Fix log directory
 mkdir -p logs && chmod 755 logs
@@ -325,7 +325,7 @@ mkdir -p logs && chmod 755 logs
 
 **Smart URL Management**
 - Automatically queries database for open grants
-- Combines with URLs from `nihr_urls.txt`
+- Combines with URLs from `data/urls/nihr_urls.txt`
 - Deduplicates and prioritizes database URLs
 
 **Embedding Generation**
@@ -418,7 +418,7 @@ API costs:
 
 ### Custom Embedding Context
 
-Edit `ingest_nihr.py`, function `extract_embedding_text()` to customize what goes into embeddings.
+Edit `run_ingestion.py`, function `extract_embedding_text()` to customize what goes into embeddings.
 
 ### Database Connection Pooling
 
@@ -434,12 +434,12 @@ For high-frequency runs, consider using connection pooling in `src/storage/`.
 
 ## Support
 
-Check logs first: `logs/scraper_*.log`
+Check logs first: `outputs/logs/scraper_*.log`
 
 Common solutions:
 - Import errors: Ensure in project root directory
 - DB errors: Verify DATABASE_URL in .env
-- Scraping errors: Test with dry_run.py
+- Scraping errors: Test with run_scraper.py
 - Cron errors: Check permissions on .sh scripts
 
 ## License

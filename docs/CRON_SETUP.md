@@ -4,9 +4,9 @@
 
 This setup enables automated scraping of NIHR funding opportunities on a schedule. The scraper will:
 - **Rescrape all open NIHR grants** from the database to detect changes
-- **Ingest new grants** from `nihr_urls.txt`
+- **Ingest new grants** from `data/urls/nihr_urls.txt`
 - **Detect and log changes** (status, deadline, budget)
-- **Update PostgreSQL** with latest data
+- **Update MongoDB** with latest data
 - **Update Pinecone** with fresh embeddings
 - **Extract budget info** from PDFs and linked documents
 
@@ -14,7 +14,7 @@ This setup enables automated scraping of NIHR funding opportunities on a schedul
 
 ### 1. Add URLs to Track
 
-Edit `nihr_urls.txt` and add NIHR opportunity URLs:
+Edit `data/urls/nihr_urls.txt` and add NIHR opportunity URLs:
 
 ```bash
 # NIHR Funding Opportunity URLs
@@ -28,7 +28,7 @@ https://www.nihr.ac.uk/funding/another-opportunity/2025449
 Run the setup script:
 
 ```bash
-./setup_cron.sh
+./cron_job.sh
 ```
 
 Choose a schedule:
@@ -48,7 +48,7 @@ crontab -l | grep nihr
 
 You should see something like:
 ```
-0 2 * * * /Users/rileycoleman/NIHR scraper/run_scraper.sh >> /Users/rileycoleman/NIHR scraper/logs/cron.log 2>&1
+0 2 * * * /Users/rileycoleman/NIHR scraper/run_scraper.sh >> /Users/rileycoleman/NIHR scraper/outputs/logs/cron.log 2>&1
 ```
 
 ## How It Works
@@ -71,7 +71,7 @@ The scraper automatically:
    ```
 
 5. **Updates storage**:
-   - PostgreSQL: Grant metadata
+   - MongoDB: Grant metadata
    - Pinecone: Embeddings with updated content
 
 6. **Extracts budgets** from documents:
@@ -86,18 +86,18 @@ The scraper automatically:
 - Ensures we catch deadline extensions, status changes, etc.
 
 **Priority 2: New Grants (from file)**
-- URLs listed in `nihr_urls.txt`
+- URLs listed in `data/urls/nihr_urls.txt`
 - Deduplicated with database grants
 
 ## File Structure
 
 ```
 NIHR scraper/
-├── ingest_nihr.py          # Main ingestion script
+├── run_ingestion.py          # Main ingestion script
 ├── run_scraper.sh          # Cron runner wrapper
-├── setup_cron.sh           # Cron installation script
-├── nihr_urls.txt           # URLs to scrape
-├── logs/                   # Log files
+├── cron_job.sh           # Cron installation script
+├── data/urls/nihr_urls.txt           # URLs to scrape
+├── outputs/logs/                   # Log files
 │   ├── scraper_20251120_020000.log
 │   ├── scraper_20251121_020000.log
 │   └── cron.log
@@ -109,13 +109,13 @@ NIHR scraper/
 ### View Latest Log
 
 ```bash
-ls -lt logs/scraper_*.log | head -1 | awk '{print $9}' | xargs cat
+ls -lt outputs/logs/scraper_*.log | head -1 | awk '{print $9}' | xargs cat
 ```
 
 ### View Live (when running manually)
 
 ```bash
-tail -f logs/scraper_$(date +%Y%m%d)*.log
+tail -f outputs/logs/scraper_$(date +%Y%m%d)*.log
 ```
 
 ### Log Retention
@@ -129,7 +129,7 @@ Before setting up the cron job, test manually:
 
 ```bash
 # Test the ingestion script directly
-python3 ingest_nihr.py
+python3 run_ingestion.py
 
 # Test the cron runner
 ./run_scraper.sh
@@ -170,25 +170,25 @@ crontab -e
 ### Check Last Run
 
 ```bash
-ls -lht logs/ | head -5
+ls -lht outputs/logs/ | head -5
 ```
 
 ### Check for Errors
 
 ```bash
-grep -i "error\|failed" logs/scraper_*.log
+grep -i "error\|failed" outputs/logs/scraper_*.log
 ```
 
 ### Check Changes Detected
 
 ```bash
-grep -A 3 "CHANGES:" logs/scraper_*.log | tail -20
+grep -A 3 "CHANGES:" outputs/logs/scraper_*.log | tail -20
 ```
 
 ### Database Stats
 
 ```bash
-psql $DATABASE_URL -c "
+mongosh -c "
 SELECT
     status,
     COUNT(*) as count,
@@ -224,7 +224,7 @@ GROUP BY status;
 
 1. Check the log file:
    ```bash
-   tail -50 logs/scraper_*.log | tail -1
+   tail -50 outputs/logs/scraper_*.log | tail -1
    ```
 
 2. Test manually with full output:
@@ -241,14 +241,14 @@ GROUP BY status;
 
 ### Database Connection Issues
 
-1. Check PostgreSQL is running:
+1. Check MongoDB is running:
    ```bash
    pg_isready -h localhost -p 5432
    ```
 
 2. Test connection:
    ```bash
-   psql $DATABASE_URL -c "SELECT 1;"
+   mongosh -c "SELECT 1;"
    ```
 
 ### Pinecone Issues
@@ -265,7 +265,7 @@ GROUP BY status;
 
 2. Test connection:
    ```bash
-   python3 dry_run.py
+   python3 run_scraper.py
    ```
 
 ## Example Output
@@ -281,7 +281,7 @@ Running ingestion...
 INGESTING NIHR GRANTS TO PRODUCTION
 ======================================================================
 📊 Found 15 open NIHR grants in database
-📁 Loaded 2 URLs from nihr_urls.txt
+📁 Loaded 2 URLs from data/urls/nihr_urls.txt
 
 📋 Processing 17 opportunities:
    🔄 15 open grants (rescraping for changes)
@@ -293,7 +293,7 @@ INGESTING NIHR GRANTS TO PRODUCTION
   📥 Scraping...
   ✅ Team Science Award (Cohort 3)...
   🔄 CHANGES: Deadline: 2026-01-28 → 2026-02-15
-  ✅ Saved to PostgreSQL
+  ✅ Saved to MongoDB
   🔮 Generating embedding...
   📌 Upserting to Pinecone...
   ✅ Indexed in Pinecone
@@ -302,7 +302,7 @@ INGESTING NIHR GRANTS TO PRODUCTION
   📥 Scraping...
   ✅ Research Fellowship Programme...
   ✓ No changes
-  ✅ Saved to PostgreSQL
+  ✅ Saved to MongoDB
   ...
 
 ======================================================================
@@ -316,7 +316,7 @@ INGESTION COMPLETE
    🔄 Updated: 3
    ✓ Unchanged: 12
 
-📊 PostgreSQL (NIHR):
+📊 MongoDB (NIHR):
    Total: 45 grants
    Open: 15 grants
 📊 Pinecone (Total): 112,485 vectors
@@ -363,7 +363,7 @@ Approximate costs per run:
 ## Next Steps
 
 1. ✅ Verify `.env` file has all credentials
-2. ✅ Add initial URLs to `nihr_urls.txt`
+2. ✅ Add initial URLs to `data/urls/nihr_urls.txt`
 3. ✅ Test manually: `./run_scraper.sh`
-4. ✅ Install cron: `./setup_cron.sh`
-5. ✅ Monitor first few runs in `logs/`
+4. ✅ Install cron: `./cron_job.sh`
+5. ✅ Monitor first few runs in `outputs/logs/`

@@ -3,11 +3,11 @@
 ## What's Ready
 
 ### Core Files
-- ✅ **ingest_nihr.py** - Main ingestion script (rescrapes open grants + new URLs)
+- ✅ **run_ingestion.py** - Main ingestion script (rescrapes open grants + new URLs)
 - ✅ **run_scraper.sh** - Cron runner with logging
-- ✅ **setup_cron.sh** - Interactive cron installer
-- ✅ **nihr_urls.txt** - URL tracking file (add your URLs here)
-- ✅ **logs/** - Log directory (auto-created)
+- ✅ **cron_job.sh** - Interactive cron installer
+- ✅ **data/urls/nihr_urls.txt** - URL tracking file (add your URLs here)
+- ✅ **outputs/logs/** - Log directory (auto-created)
 
 ### Features
 
@@ -20,11 +20,11 @@
 **Smart Rescaping:**
 - ✅ Automatically fetches all open NIHR grants from database
 - ✅ Rescrapes to detect changes
-- ✅ Also processes new URLs from nihr_urls.txt
+- ✅ Also processes new URLs from data/urls/nihr_urls.txt
 - ✅ Deduplicates automatically
 
 **Dual Storage:**
-- ✅ PostgreSQL: Grant metadata + change tracking
+- ✅ MongoDB: Grant metadata + change tracking
 - ✅ Pinecone: Embeddings for semantic search
 
 ## Quick Start
@@ -35,8 +35,8 @@
 # Make sure you're in the right directory
 cd "/Users/rileycoleman/NIHR scraper"
 
-# Test the ingestion (will use DB URLs + nihr_urls.txt)
-python3 ingest_nihr.py
+# Test the ingestion (will use DB URLs + data/urls/nihr_urls.txt)
+python3 run_ingestion.py
 
 # Or test the full cron runner
 ./run_scraper.sh
@@ -45,7 +45,7 @@ python3 ingest_nihr.py
 ### 2. Install Cron Job
 
 ```bash
-./setup_cron.sh
+./cron_job.sh
 ```
 
 Choose your schedule (recommend: **Option 1 - Daily at 2:00 AM**)
@@ -57,17 +57,17 @@ Choose your schedule (recommend: **Option 1 - Daily at 2:00 AM**)
 crontab -l | grep nihr
 
 # Watch for the first run (if running now)
-tail -f logs/scraper_*.log
+tail -f outputs/logs/scraper_*.log
 ```
 
 ## What Happens on Each Run
 
 ```
-1. Query PostgreSQL for open NIHR grants
+1. Query MongoDB for open NIHR grants
    ↓
 2. Scrape each open grant to check for changes
    ↓
-3. Also scrape new URLs from nihr_urls.txt
+3. Also scrape new URLs from data/urls/nihr_urls.txt
    ↓
 4. Normalize data (Grant + Documents)
    ↓
@@ -75,7 +75,7 @@ tail -f logs/scraper_*.log
    ↓
 6. Detect changes vs. existing data
    ↓
-7. Update PostgreSQL + Pinecone
+7. Update MongoDB + Pinecone
    ↓
 8. Log results with detailed change report
 ```
@@ -87,13 +87,13 @@ tail -f logs/scraper_*.log
 INGESTING NIHR GRANTS TO PRODUCTION
 ======================================================================
 📊 Found 15 open NIHR grants in database
-📁 Loaded 1 URLs from nihr_urls.txt
+📁 Loaded 1 URLs from data/urls/nihr_urls.txt
 
 [1/16] Opportunity 2025448
   📥 Scraping...
   ✅ Team Science Award (Cohort 3)...
   🔄 CHANGES: Deadline: 2026-01-28 → 2026-02-15
-  ✅ Saved to PostgreSQL
+  ✅ Saved to MongoDB
   🔮 Generating embedding...
   📌 Upserting to Pinecone...
   ✅ Indexed in Pinecone
@@ -118,16 +118,16 @@ INGESTION COMPLETE
 
 ```bash
 # View latest log
-ls -t logs/scraper_*.log | head -1 | xargs tail -50
+ls -t outputs/logs/scraper_*.log | head -1 | xargs tail -50
 
 # Check for errors
-grep -i error logs/scraper_*.log | tail -10
+grep -i error outputs/logs/scraper_*.log | tail -10
 
 # See what changed in last run
-grep -A 5 "DETAILED CHANGES" logs/scraper_*.log | tail -20
+grep -A 5 "DETAILED CHANGES" outputs/logs/scraper_*.log | tail -20
 
 # Database stats
-psql $DATABASE_URL -c "
+mongosh -c "
 SELECT status, COUNT(*)
 FROM grants
 WHERE source = 'nihr'
@@ -139,11 +139,11 @@ GROUP BY status;
 
 ```
 /Users/rileycoleman/NIHR scraper/
-├── ingest_nihr.py          ← Main script
+├── run_ingestion.py          ← Main script
 ├── run_scraper.sh          ← Cron runner
-├── setup_cron.sh           ← Cron installer
-├── nihr_urls.txt           ← Add URLs here
-├── logs/                   ← Log files
+├── cron_job.sh           ← Cron installer
+├── data/urls/nihr_urls.txt           ← Add URLs here
+├── outputs/logs/                   ← Log files
 │   └── scraper_*.log
 ├── .env                    ← API keys
 └── CRON_SETUP.md           ← Full documentation
@@ -151,10 +151,10 @@ GROUP BY status;
 
 ## Next Steps
 
-1. **Add URLs:** Edit nihr_urls.txt with NIHR opportunities to track
-2. **Test:** Run `python3 ingest_nihr.py` manually
-3. **Install Cron:** Run `./setup_cron.sh`
-4. **Monitor:** Check `logs/` after first run
+1. **Add URLs:** Edit data/urls/nihr_urls.txt with NIHR opportunities to track
+2. **Test:** Run `python3 run_ingestion.py` manually
+3. **Install Cron:** Run `./cron_job.sh`
+4. **Monitor:** Check `outputs/logs/` after first run
 
 ## Troubleshooting
 
@@ -164,7 +164,7 @@ GROUP BY status;
 crontab -l
 
 # Check logs for errors
-tail -100 logs/scraper_*.log
+tail -100 outputs/logs/scraper_*.log
 ```
 
 **Script failing?**
@@ -189,8 +189,8 @@ crontab -e
 ## Ready to Go! 🚀
 
 Everything is wired up and ready. Just:
-1. Add URLs to `nihr_urls.txt`
-2. Test with `python3 ingest_nihr.py`
-3. Install with `./setup_cron.sh`
+1. Add URLs to `data/urls/nihr_urls.txt`
+2. Test with `python3 run_ingestion.py`
+3. Install with `./cron_job.sh`
 
 Full documentation in [CRON_SETUP.md](CRON_SETUP.md)

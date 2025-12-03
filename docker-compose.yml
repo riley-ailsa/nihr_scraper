@@ -45,7 +45,7 @@ services:
     env_file: .env
     environment:
       MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-dev_password}@mongodb:27017/ailsa_grants?authSource=admin
-      CRON_SCHEDULE: "0 2 * * *"  # Daily at 2 AM
+      CRON_SCHEDULE: "0 2 * * 2,5"  # Tuesday & Friday at 2 AM
     depends_on:
       mongodb:
         condition: service_healthy
