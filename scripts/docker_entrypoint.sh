@@ -9,7 +9,7 @@ MODE="${1:-once}"
 case "$MODE" in
   once)
     echo "Running NIHR scraper (one-time execution)..."
-    exec python3 ingest_nihr.py
+    exec python3 run_ingestion.py
     ;;
 
   cron)
@@ -21,7 +21,7 @@ case "$MODE" in
     echo "Cron schedule: $CRON_SCHEDULE"
 
     # Create cron job
-    echo "$CRON_SCHEDULE cd /app && python3 ingest_nihr.py >> /app/logs/cron.log 2>&1" | crontab -
+    echo "$CRON_SCHEDULE cd /app && python3 run_ingestion.py >> /app/outputs/logs/cron.log 2>&1" | crontab -
 
     # Start cron in foreground
     echo "Starting cron daemon..."
@@ -30,12 +30,12 @@ case "$MODE" in
 
   test)
     echo "Running tests..."
-    python3 test_nihr_scraper.py
+    python3 scripts/test_scraper.py
     ;;
 
   dry-run)
     echo "Running dry run (no database writes)..."
-    python3 dry_run.py
+    python3 run_scraper.py
     ;;
 
   *)

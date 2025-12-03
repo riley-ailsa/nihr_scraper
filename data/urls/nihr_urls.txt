@@ -1,0 +1,11 @@
+# NIHR funding opportunity URLs for testing
+# Add one URL per line
+
+# Programme Grants for Applied Research - October 2025
+https://www.nihr.ac.uk/funding/programme-grants-applied-research-october-2025/2025350-2025351-2025352
+
+# Programme Development Grants - March 2025
+https://www.nihr.ac.uk/funding/programme-development-grants-march-2025/2025279-2025280-2025281-2025282
+
+# Programme Grants for Applied Research - June 2025
+https://www.nihr.ac.uk/funding/programme-grants-applied-research-june-2025/2025325-2025326-2025327

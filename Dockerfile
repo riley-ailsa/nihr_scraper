@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    postgresql-client \
     cron \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -20,11 +19,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create logs directory
-RUN mkdir -p logs
+# Create output directories
+RUN mkdir -p outputs/logs outputs/excel
 
 # Make scripts executable
-RUN chmod +x run_scraper.sh docker-entrypoint.sh ingest_nihr.py
+RUN chmod +x run_scraper.sh scripts/docker_entrypoint.sh run_ingestion.py
 
 # Create non-root user
 RUN useradd -m -u 1000 scraper && \
@@ -38,7 +37,7 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=10s --retries=3 \
     CMD python3 -c "import sys; from src.ingest.nihr_funding import NihrFundingScraper; sys.exit(0)" || exit 1
 
 # Default command (run once)
-CMD ["python3", "ingest_nihr.py"]
+CMD ["python3", "run_ingestion.py"]
 
 # For cron mode, use:
-# CMD ["./docker-entrypoint.sh", "cron"]
+# CMD ["./scripts/docker_entrypoint.sh", "cron"]

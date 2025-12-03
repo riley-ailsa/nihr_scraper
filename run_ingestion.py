@@ -63,7 +63,7 @@ def get_open_grants_from_db() -> List[str]:
     """Get URLs of all open NIHR grants from database"""
     try:
         cursor = db.grants.find(
-            {"source": "nihr", "status": "active"},
+            {"source": "nihr", "status": "Open"},
             {"url": 1, "closes_at": 1}
         ).sort("closes_at", 1)
 
@@ -166,8 +166,8 @@ def build_grant_document(grant, indexable_docs: List) -> Dict[str, Any]:
         "url": grant.url or "",
         "description": grant.description or "",
 
-        # Status & dates
-        "status": "active" if grant.is_active else "closed",
+        # Status & dates (standardized to EU convention)
+        "status": "Open" if grant.is_active else "Closed",
         "is_active": grant.is_active,
         "opens_at": grant.opens_at,
         "closes_at": grant.closes_at,
@@ -336,7 +336,7 @@ def main():
     open_urls = get_open_grants_from_db()
 
     # Also load any new URLs from file
-    file_urls = load_urls("nihr_urls.txt")
+    file_urls = load_urls("data/urls/nihr_urls.txt")
 
     # Combine and deduplicate
     all_urls = list(dict.fromkeys(open_urls + file_urls))  # Preserves order, removes dupes
@@ -386,7 +386,7 @@ def main():
 
     # Final stats
     mongo_count = db.grants.count_documents({"source": "nihr"})
-    open_count = db.grants.count_documents({"source": "nihr", "status": "active"})
+    open_count = db.grants.count_documents({"source": "nihr", "status": "Open"})
 
     pinecone_stats = index.describe_index_stats()
 

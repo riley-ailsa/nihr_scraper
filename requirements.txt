@@ -1,19 +1,11 @@
-# Core dependencies
-requests>=2.31.0
-beautifulsoup4>=4.12.0
+# Standardized requirements.txt for ALL scrapers
+pymongo==4.10.1
+pinecone-client==5.0.1  # Use pinecone-client, not pinecone
+openai==1.54.4
+python-dotenv==1.0.0
+tqdm==4.66.1
+beautifulsoup4==4.12.3
+requests==2.31.0
 lxml>=5.1.0
 python-dateutil>=2.8.2
-
-# Database
-pymongo>=4.10.1
-
-# Vector database
-pinecone-client>=3.0.0
-
-# AI/ML
-openai>=1.12.0
-
-# Utilities
-python-dotenv>=1.0.0
-tqdm>=4.66.0
 pytz>=2024.1

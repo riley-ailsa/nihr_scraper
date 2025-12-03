@@ -1,21 +1,21 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database (optional - use if you don't have external DB)
-  postgres:
-    image: postgres:16-alpine
-    container_name: nihr-postgres
+  # MongoDB Database (optional - use if you don't have external DB)
+  mongodb:
+    image: mongo:7
+    container_name: nihr-mongodb
     environment:
-      POSTGRES_DB: ailsa
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-dev_password}
+      MONGO_INITDB_DATABASE: ailsa_grants
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mongodb_data:/data/db
+      - ./config/mongo_setup.js:/docker-entrypoint-initdb.d/mongo_setup.js
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,15 +27,15 @@ services:
     container_name: nihr-scraper
     env_file: .env
     environment:
-      # Override DATABASE_URL to use docker postgres
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/ailsa
+      # Override MONGO_URI to use docker mongodb
+      MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-dev_password}@mongodb:27017/ailsa_grants?authSource=admin
     depends_on:
-      postgres:
+      mongodb:
         condition: service_healthy
     volumes:
-      - ./logs:/app/logs
-      - ./nihr_urls.txt:/app/nihr_urls.txt
-    command: python3 ingest_nihr.py
+      - ./outputs/logs:/app/outputs/logs
+      - ./data/urls/nihr_urls.txt:/app/data/urls/nihr_urls.txt
+    command: python3 run_ingestion.py
     restart: "no"
 
   # NIHR Scraper (cron mode - scheduled runs)
@@ -44,19 +44,19 @@ services:
     container_name: nihr-scraper-cron
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/ailsa
+      MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-dev_password}@mongodb:27017/ailsa_grants?authSource=admin
       CRON_SCHEDULE: "0 2 * * *"  # Daily at 2 AM
     depends_on:
-      postgres:
+      mongodb:
         condition: service_healthy
     volumes:
-      - ./logs:/app/logs
-      - ./nihr_urls.txt:/app/nihr_urls.txt
-    command: ./docker-entrypoint.sh cron
+      - ./outputs/logs:/app/outputs/logs
+      - ./data/urls/nihr_urls.txt:/app/data/urls/nihr_urls.txt
+    command: ./scripts/docker_entrypoint.sh cron
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  mongodb_data:
     driver: local
 
 networks:
