@@ -7,7 +7,7 @@ Complete deployment package ready for production use.
 ### Core Application
 - Fully functional NIHR web scraper with tab-aware parsing
 - Automatic change detection (status, deadlines, budgets)
-- Dual storage: PostgreSQL + Pinecone
+- Dual storage: MongoDB + Pinecone (shared `grants` collection with Innovate UK)
 - Production-ready error handling and logging
 
 ### Deployment Options
@@ -133,18 +133,24 @@ tail -f logs/scraper_*.log
 ### API Keys (.env file)
 
 ```bash
-OPENAI_API_KEY=sk-...              # Required
-PINECONE_API_KEY=pcsk_...          # Required
-PINECONE_INDEX_NAME=ailsa-grants   # Required
-DATABASE_URL=postgresql://...      # Required
+OPENAI_API_KEY=sk-...                                        # Required
+PINECONE_API_KEY=pcsk_...                                    # Required
+PINECONE_INDEX_NAME=ailsa-grants                             # Required
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/...    # Required
+MONGO_DB_NAME=ailsa_grants                                   # Optional (default: ailsa_grants)
 ```
 
-### Database Schema
+### MongoDB Setup
 
-Automatically created by init.sql:
-- grants table with proper indexes
-- Support for change tracking
-- Optimized for NIHR data structure
+Run `mongo_setup.js` to create indexes (can share with Innovate UK - same collection):
+```bash
+mongosh "$MONGO_URI" < mongo_setup.js
+```
+
+The grants collection includes:
+- Unique index on `grant_id`
+- Compound indexes for querying by source and status
+- TTL support for change tracking
 
 ### URL Tracking
 
@@ -163,8 +169,8 @@ https://www.nihr.ac.uk/funding/opportunity-2/2025449
 docker-compose ps
 docker inspect nihr-scraper-cron | grep Health
 
-# Database
-psql $DATABASE_URL -c "SELECT COUNT(*) FROM grants WHERE source='nihr';"
+# MongoDB
+mongosh "$MONGO_URI" --eval 'use ailsa_grants; db.grants.countDocuments({source: "nihr"})'
 
 # Logs
 tail -f logs/scraper_*.log
@@ -176,19 +182,20 @@ grep -i error logs/scraper_*.log
 Typical execution (15 grants):
 - Time: 45-60 seconds
 - API cost: $0.01-0.02 per run
-- Storage: ~500KB per grant (PostgreSQL)
+- Storage: ~10KB per grant (MongoDB with sections)
 - Storage: ~6KB per grant (Pinecone vectors)
 
 Monthly costs (daily runs):
 - OpenAI: ~$0.30-0.60
 - Pinecone: Included in free tier
-- PostgreSQL: Self-hosted
+- MongoDB: Atlas free tier or self-hosted
 
 ## Production Checklist
 
 - [ ] .env file configured with production API keys
 - [ ] nihr_urls.txt populated with opportunities to track
-- [ ] PostgreSQL database accessible and initialized
+- [ ] MongoDB cluster accessible (MONGO_URI configured)
+- [ ] MongoDB indexes created (run mongo_setup.js)
 - [ ] Pinecone index created (ailsa-grants)
 - [ ] Test run completed successfully
 - [ ] Cron/Docker schedule configured
@@ -209,7 +216,7 @@ Monthly costs (daily runs):
 1. Check logs: logs/scraper_*.log
 2. Test manually: python3 ingest_nihr.py
 3. Dry run: python3 dry_run.py
-4. Database: psql $DATABASE_URL
+4. Database: mongosh "$MONGO_URI"
 5. Documentation: docs/
 
 ## Next Steps

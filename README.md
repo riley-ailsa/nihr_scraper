@@ -1,6 +1,6 @@
 # NIHR Funding Scraper
 
-Automated scraper for NIHR (National Institute for Health and Care Research) funding opportunities. Extracts grant data, generates embeddings, and maintains synchronized storage across PostgreSQL and Pinecone.
+Automated scraper for NIHR (National Institute for Health and Care Research) funding opportunities. Extracts grant data, generates embeddings, and maintains synchronized storage across MongoDB and Pinecone.
 
 ## Quick Start
 
@@ -36,7 +36,7 @@ python3 ingest_nihr.py
 - Logs all changes with details
 
 **Storage**
-- PostgreSQL: Structured grant metadata
+- MongoDB: Structured grant metadata (shared `grants` collection)
 - Pinecone: Semantic search embeddings (1536-dim vectors)
 - Automatic upserts with change tracking
 
@@ -59,29 +59,58 @@ OPENAI_API_KEY=sk-...
 PINECONE_API_KEY=pcsk_...
 PINECONE_INDEX_NAME=ailsa-grants
 
-# PostgreSQL
-DATABASE_URL=postgresql://user:password@host:port/database
+# MongoDB
+MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority
+MONGO_DB_NAME=ailsa_grants
 ```
 
-### Database Schema
+### MongoDB Document Schema
 
-```sql
-CREATE TABLE grants (
-    grant_id VARCHAR(255) PRIMARY KEY,
-    source VARCHAR(50) NOT NULL,
-    title TEXT NOT NULL,
-    url TEXT NOT NULL,
-    call_id VARCHAR(255),
-    status VARCHAR(50),
-    open_date DATE,
-    close_date DATE,
-    tags TEXT[],
-    description_summary TEXT,
-    budget_min BIGINT,
-    budget_max BIGINT,
-    scraped_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+```javascript
+// Collection: grants (shared with Innovate UK scraper)
+{
+    "grant_id": "nihr_2025/448",        // Unique identifier
+    "source": "nihr",                    // Source identifier
+    "external_id": "2025/448",          // NIHR reference ID
+
+    // Core metadata
+    "title": "Team Science Award",
+    "url": "https://www.nihr.ac.uk/funding/...",
+    "description": "...",
+
+    // Status & dates
+    "status": "active",                  // "active" | "closed"
+    "is_active": true,
+    "opens_at": ISODate("2025-01-01"),
+    "closes_at": ISODate("2025-06-30"),
+
+    // Funding
+    "total_fund_gbp": 4000000,          // Parsed numeric amount
+    "total_fund_display": "£4 million", // Display text
+    "project_funding_min": null,
+    "project_funding_max": null,
+    "competition_type": "grant",
+
+    // Classification
+    "tags": ["nihr", "health_research"],
+    "sectors": ["health", "medical_research"],
+
+    // Tab-aware content sections
+    "sections": [
+        { "name": "overview", "text": "...", "url": "...#tab-overview" },
+        { "name": "eligibility", "text": "...", "url": "...#tab-eligibility" }
+    ],
+
+    // Resources (PDFs, links)
+    "resources": [
+        { "id": "...", "title": "Guidance PDF", "url": "...", "type": "pdf" }
+    ],
+
+    // Timestamps
+    "scraped_at": ISODate("..."),
+    "updated_at": ISODate("..."),
+    "created_at": ISODate("...")
+}
 ```
 
 ## Usage
@@ -173,13 +202,14 @@ grep -i "error\|failed" logs/scraper_*.log
 # See detected changes
 grep -A 5 "DETAILED CHANGES" logs/scraper_*.log | tail -20
 
-# Database stats
-psql $DATABASE_URL -c "
-SELECT status, COUNT(*)
-FROM grants
-WHERE source = 'nihr'
-GROUP BY status;
-"
+# Database stats (MongoDB)
+mongosh "$MONGO_URI" --eval '
+use ailsa_grants;
+db.grants.aggregate([
+    { $match: { source: "nihr" } },
+    { $group: { _id: "$status", count: { $sum: 1 } } }
+]);
+'
 ```
 
 ### Example Output
@@ -212,6 +242,10 @@ Changes Detected:
    Updated: 3
    Unchanged: 12
 
+MongoDB (NIHR):
+   Total: 17 grants
+   Active: 15 grants
+
 DETAILED CHANGES:
    Opportunity 2025448:
       • Deadline: 2026-01-28 -> 2026-02-15
@@ -232,11 +266,11 @@ python3 -c "from src.ingest.nihr_funding import NihrFundingScraper; print('OK')"
 ### Database Connection
 
 ```bash
-# Test connection
-psql $DATABASE_URL -c "SELECT version();"
+# Test MongoDB connection
+mongosh "$MONGO_URI" --eval 'db.runCommand({ ping: 1 })'
 
-# Verify grants table exists
-psql $DATABASE_URL -c "\dt grants"
+# Verify grants collection exists
+mongosh "$MONGO_URI" --eval 'use ailsa_grants; db.grants.countDocuments({})'
 ```
 
 ### Scraping Issues
