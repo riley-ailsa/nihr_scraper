@@ -139,21 +139,23 @@ https://www.nihr.ac.uk/funding/compensatory-interventions-facilitate-swallowing-
 https://www.nihr.ac.uk/funding/continuing-areas-research-interest-phr-programme/02491
 https://www.nihr.ac.uk/funding/continuing-areas-research-interest-phr-programme/2024219
 https://www.nihr.ac.uk/funding/continuing-areas-research-interest-phr-programme/2025384
-https://www.nihr.ac.uk/funding/crdc-regional-research-support-hubs-nhs-rd-offices-crdc-rrs-hubs/2025456
+https://www.nihr.ac.uk/funding/continuing-areas-research-interest-public-health-research-phr-programme/2025313
 https://www.nihr.ac.uk/funding/decarbonising-health-and-social-care-system/2024217
+https://www.nihr.ac.uk/funding/decarbonising-health-and-social-care-system/2025389
 https://www.nihr.ac.uk/funding/development-and-skills-enhancement-dse-award-cohort-6/2024218
 https://www.nihr.ac.uk/funding/development-and-skills-enhancement-dse-award-cohort-7/2025300
 https://www.nihr.ac.uk/funding/development-and-skills-enhancement-dse-award-cohort-8/2025378
-https://www.nihr.ac.uk/funding/development-and-skills-enhancement-dse-award-cohort-9/2025464
 https://www.nihr.ac.uk/funding/development-award-period-poverty-and-menstrual-support/2025268
 https://www.nihr.ac.uk/funding/development-guidance-better-research-methods/2025395
 https://www.nihr.ac.uk/funding/discontinuing-thickened-fluids-adults-oropharyngeal-dysphagia/2467
 https://www.nihr.ac.uk/funding/doctoral-award-cohort-1/2025121
+https://www.nihr.ac.uk/funding/doctoral-award-cohort-2/2025445
 https://www.nihr.ac.uk/funding/doctoral-clinical-and-practitioner-academic-fellowship-dcaf-round-5/35484
 https://www.nihr.ac.uk/funding/doctoral-clinical-and-practitioner-academic-fellowship-dcaf-round-6/97006
 https://www.nihr.ac.uk/funding/doctoral-fellowship-round-12/35840
 https://www.nihr.ac.uk/funding/doctoral-fellowship-round-13/97021
 https://www.nihr.ac.uk/funding/doctoral-local-authority-fellowships-dlaf-round-4/97005
+https://www.nihr.ac.uk/funding/domestic-violence-against-women-and-girls/2025450
 https://www.nihr.ac.uk/funding/earlier-stopping-nac-following-paracetamol-overdose/2025237
 https://www.nihr.ac.uk/funding/earlier-stopping-nac-following-paracetamol-overdose/2470
 https://www.nihr.ac.uk/funding/early-action-and-prevention-within-health-and-social-care-services/2025410
@@ -166,8 +168,9 @@ https://www.nihr.ac.uk/funding/eme-postdoctoral-award/2025305
 https://www.nihr.ac.uk/funding/eme-programme-researcher-led/2024222
 https://www.nihr.ac.uk/funding/eme-programme-researcher-led/2025296
 https://www.nihr.ac.uk/funding/eme-programme-researcher-led/2025371
-https://www.nihr.ac.uk/funding/eme-programme-researcher-led/2025458
 https://www.nihr.ac.uk/funding/eme-programme-researcher-led/2496
+https://www.nihr.ac.uk/funding/era4health-partnership-2026-joint-transnational-call-trials4health/97051
+https://www.nihr.ac.uk/funding/european-partnership-one-health-antimicrobial-resistance-joint-transnational-call-2026/97504
 https://www.nihr.ac.uk/funding/evaluating-interventions-fosterkinship-carers-looked-after-children-behavioural-difficulties/2025242
 https://www.nihr.ac.uk/funding/evaluation-national-targeted-supervised-toothbrushing-programme-england/2025435
 https://www.nihr.ac.uk/funding/evaluation-nihr-global-health-research-centres/2025231
@@ -209,7 +212,6 @@ https://www.nihr.ac.uk/funding/i4i-thrive-april-2025/2025288
 https://www.nihr.ac.uk/funding/iat-clinical-lectureships-medicine-2023/32788
 https://www.nihr.ac.uk/funding/iat-clinical-lectureships-medicine-2024/34518
 https://www.nihr.ac.uk/funding/impact-local-climate-change-adaptation-health-and-health-inequalities/2025340
-https://www.nihr.ac.uk/funding/improving-access-experience-and-outcomes-physical-health-services-prisons/2025461
 https://www.nihr.ac.uk/funding/improving-diagnosis-urinary-tract-infection-older-adults/2025238
 https://www.nihr.ac.uk/funding/improving-diagnosis-urinary-tract-infection-older-adults/2469
 https://www.nihr.ac.uk/funding/improving-health-and-social-care-services-working-age-people-multiple-long-term-conditions/2025209
@@ -227,8 +229,10 @@ https://www.nihr.ac.uk/funding/invention-innovation-product-development-awards-c
 https://www.nihr.ac.uk/funding/lidocaine-infusions-refractory-neuropathic-pain/2025244
 https://www.nihr.ac.uk/funding/liver-disease-hsdr-programme/2456
 https://www.nihr.ac.uk/funding/local-authority-short-placement-award-research-collaboration-la-sparc-cohort-5/2025335
+https://www.nihr.ac.uk/funding/loneliness-community/2025451
 https://www.nihr.ac.uk/funding/management-blood-pressure-elderly-people-hypertension-and-symptomatic-postural-hypotension/2468
 https://www.nihr.ac.uk/funding/management-refractory-chronic-nonbacterial-osteomyelitis-children-and-young-people/2025365
+https://www.nihr.ac.uk/funding/marthas-rule-summative-evaluation/2025295
 https://www.nihr.ac.uk/funding/mass-media-content/2024209
 https://www.nihr.ac.uk/funding/mens-mental-health/2025361
 https://www.nihr.ac.uk/funding/mental-health-research-group-award/34429
@@ -244,7 +248,6 @@ https://www.nihr.ac.uk/funding/nihr-academy-member-event-fund/34758
 https://www.nihr.ac.uk/funding/nihr-advanced-fellowship-round-11/34585
 https://www.nihr.ac.uk/funding/nihr-application-development-award-health-and-care-professionals/2420
 https://www.nihr.ac.uk/funding/nihr-applied-research-collaborations-arcs-2024/97016
-https://www.nihr.ac.uk/funding/nihr-applied-research-collaborations-network-arc-network/2025442
 https://www.nihr.ac.uk/funding/nihr-capital-investment-call-20232024/35140
 https://www.nihr.ac.uk/funding/nihr-challenge-maternity-inequalities/35383
 https://www.nihr.ac.uk/funding/nihr-climate-change-and-health-adapting-health-and-social-care-systems-development-awards/2025277
@@ -268,7 +271,6 @@ https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partner
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-eme-programme/2024224
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-eme-programme/2025299
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-eme-programme/2025372
-https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-eme-programme/2025459
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-hsdr-programme/2025210
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-hsdr-programme/2025331
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-hta-programme/2025204
@@ -276,6 +278,7 @@ https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partner
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-hta-programme/2025392
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-phr-programme/2024227
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-phr-programme/2024315
+https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity-phr-programme/2025386
 https://www.nihr.ac.uk/funding/nihr-james-lind-alliance-priority-setting-partnerships-rolling-funding-opportunity/36179
 https://www.nihr.ac.uk/funding/nihr-local-authority-short-placement-award-research-collaboration-la-sparc-scheme-round-4/36307
 https://www.nihr.ac.uk/funding/nihr-mentoring-programme-cohort-3/97004
@@ -291,12 +294,13 @@ https://www.nihr.ac.uk/funding/nihr-nice-rolling-call-phr-programme/2493
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-eme-programme/2024223
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-eme-programme/2025298
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-eme-programme/2025374
-https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-eme-programme/2025457
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-hsdr-programme/2025266
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-hta-progamme/2025309
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-hta-programme/2025203
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-hta-programme/2025391
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-phr-programme/2024226
+https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-phr-programme/2025314
+https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity-phr-programme/2025385
 https://www.nihr.ac.uk/funding/nihr-nice-rolling-funding-opportunity/36180
 https://www.nihr.ac.uk/funding/nihr-pan-london-applied-research-collaborations-arcs/2025441
 https://www.nihr.ac.uk/funding/nihr-population-health-career-scientist-awards/35295
@@ -316,6 +320,7 @@ https://www.nihr.ac.uk/funding/novel-non-pharmacological-approaches-diagnosis-an
 https://www.nihr.ac.uk/funding/optimal-dosing-cancer-treatments/2025254
 https://www.nihr.ac.uk/funding/optimising-treatment-duration-immunomodulators-reduce-overtreatment/2025255
 https://www.nihr.ac.uk/funding/optimising-treatment-duration-immunomodulators-reduce-overtreatment/2025370
+https://www.nihr.ac.uk/funding/pandemic-preparedness-platform-clinical-trials-hospital-and-community-settings/2025311
 https://www.nihr.ac.uk/funding/pharmacological-treatment-and-without-cognitive-behaviour-therapy-gambling-harms/2025241
 https://www.nihr.ac.uk/funding/phirst-local-government-expressions-interest/2449
 https://www.nihr.ac.uk/funding/phr-programme-researcher-led/2024220
@@ -328,6 +333,7 @@ https://www.nihr.ac.uk/funding/postdoctoral-award-cohort-1/202598
 https://www.nihr.ac.uk/funding/postdoctoral-award-cohort-2/2025443
 https://www.nihr.ac.uk/funding/practice-fellowship-ipf-round-18/35451
 https://www.nihr.ac.uk/funding/pre-application-support-fund-cohort-6/2025339
+https://www.nihr.ac.uk/funding/pre-application-support-fund-cohort-7/2025431
 https://www.nihr.ac.uk/funding/pre-application-support-fund-round-3/35197
 https://www.nihr.ac.uk/funding/pre-application-support-fund-round-4/97009
 https://www.nihr.ac.uk/funding/pre-application-support-fund-round-5/2025213
@@ -340,7 +346,6 @@ https://www.nihr.ac.uk/funding/prehospital-cardiac-troponin-testing-rule-out-nst
 https://www.nihr.ac.uk/funding/prevention-andor-management-lymphoedema-following-breast-cancer-resection/2025215
 https://www.nihr.ac.uk/funding/primary-care-commercial-research-delivery-centres-pc-crdcs/2025221
 https://www.nihr.ac.uk/funding/product-development-awards-pda-april-2025/2025284-2025285-2025286-2025287
-https://www.nihr.ac.uk/funding/production-technology-assessment-reviews-tars/2025455
 https://www.nihr.ac.uk/funding/programme-development-grants-competition-38/34664
 https://www.nihr.ac.uk/funding/programme-development-grants-competition-39/35541
 https://www.nihr.ac.uk/funding/programme-development-grants-competition-40/36264
@@ -376,6 +381,7 @@ https://www.nihr.ac.uk/funding/prp-42-01-musculoskeletal-hubs-evaluation/2025356
 https://www.nihr.ac.uk/funding/prp-42-03-healths-role-corporate-parenting/2025358
 https://www.nihr.ac.uk/funding/prp-43-01-nhs-productivity-growth-measurement/2025422
 https://www.nihr.ac.uk/funding/prp-43-03-disabled-facilities-grant-evaluation/2025418
+https://www.nihr.ac.uk/funding/prp-43-04-evaluation-national-roll-out-asc-nurse-prescribing-fund/2025419
 https://www.nihr.ac.uk/funding/prp-43-06-evaluating-ban-sale-high-caffeine-energy-drinks-children/2025421
 https://www.nihr.ac.uk/funding/prp-evaluation-uk-vaccine-network-project-10/35005
 https://www.nihr.ac.uk/funding/prp43-02understanding-association-between-quality-timeliness-hospital-discharge-readmission-rates/2025420
@@ -384,6 +390,7 @@ https://www.nihr.ac.uk/funding/public-health-intervention-responsive-studies-tea
 https://www.nihr.ac.uk/funding/public-health-intervention-responsive-studies-teams-phirst-process-and-outcomes-evaluation/2464
 https://www.nihr.ac.uk/funding/public-health-research-phr-researcher-led/2025312
 https://www.nihr.ac.uk/funding/public-health-research-programme-rapid-funding-scheme/20247
+https://www.nihr.ac.uk/funding/reconstruction-surgery-fgmc-survivors/2025446
 https://www.nihr.ac.uk/funding/reducing-compound-pressures-nhs-and-social-care/32544
 https://www.nihr.ac.uk/funding/research-interventions-global-health-transformation-call-8/36261
 https://www.nihr.ac.uk/funding/research-mental-health-nursing-hsdr-programme/2479
@@ -395,6 +402,7 @@ https://www.nihr.ac.uk/funding/research-patient-benefit-competition-55/36320
 https://www.nihr.ac.uk/funding/research-patient-benefit-competition-56/97024
 https://www.nihr.ac.uk/funding/research-patient-benefit-july-2025/2025334-2025336-2025337
 https://www.nihr.ac.uk/funding/research-patient-benefit-march-2025/2025222-2025223-2025224
+https://www.nihr.ac.uk/funding/research-patient-benefit-november-2025/2025425-2025426-2025427
 https://www.nihr.ac.uk/funding/research-professorships-cohort-16/2025263
 https://www.nihr.ac.uk/funding/research-programme-social-care-call-2/35589
 https://www.nihr.ac.uk/funding/research-programme-social-care-competition-3/97015
@@ -403,6 +411,7 @@ https://www.nihr.ac.uk/funding/return-standing-after-fall/2025367
 https://www.nihr.ac.uk/funding/rfpb-under-represented-disciplines-and-specialisms-highlight-notice-allied-health-professionals/34949
 https://www.nihr.ac.uk/funding/rfpb-under-represented-disciplines-and-specialisms-highlight-notice-methodologists/33231
 https://www.nihr.ac.uk/funding/rfpb-under-represented-disciplines-and-specialisms-highlight-notice-other-registered-health-and-care-professionals/97032
+https://www.nihr.ac.uk/funding/rfpb-under-represented-disciplines-and-specialisms-nurses-and-midwives-202526/2025432
 https://www.nihr.ac.uk/funding/risk-prediction-venous-thromboembolism-vte-during-pregnancy-and-postpartum-period/2025364
 https://www.nihr.ac.uk/funding/rok-uk-smart-clinical-trials-collaboration-award/2025208
 https://www.nihr.ac.uk/funding/rpsc-february-2025/2025234-2025233-2025232
@@ -422,10 +431,10 @@ https://www.nihr.ac.uk/funding/studies-evaluating-clinical-and-cost-effectivenes
 https://www.nihr.ac.uk/funding/studies-seeking-improve-health-and-wellbeing-women/2476
 https://www.nihr.ac.uk/funding/suicide-prevention/2024214
 https://www.nihr.ac.uk/funding/swiss-uk-investigator-led-randomised-controlled-clinical-trials-areas-unmet-clinical-need/2025200
+https://www.nihr.ac.uk/funding/team-science-award-cohort-3/2025448
 https://www.nihr.ac.uk/funding/team-science-award-round-2-applied-health-and-social-care-research-methodology/97029
 https://www.nihr.ac.uk/funding/team-science-camp-cohort-3/2025329
 https://www.nihr.ac.uk/funding/technology-enabled-social-care-highlight-notice/36303
-https://www.nihr.ac.uk/funding/thcs-partnership-joint-transnational-call-2026-access-care/97053
 https://www.nihr.ac.uk/funding/therapies-women-children-and-others-who-experience-domestic-abuse/2024204
 https://www.nihr.ac.uk/funding/tranexamic-acid-heavy-menstrual-bleeding-patients-anticoagulation-thromboembolic-events/2025250
 https://www.nihr.ac.uk/funding/transabdominal-ultrasound-surveillance-gallbladder-cancer-patients-gallbladder-polyps/2025252
